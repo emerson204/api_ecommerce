@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from cloudinary.models import CloudinaryField
 
 class CategoriasModel(models.Model):
   id = models.AutoField(primary_key=True)
@@ -18,7 +19,7 @@ class ProductosModel(models.Model):
   precio = models.FloatField()
   stock = models.IntegerField()
   categoria_id = models.ForeignKey(CategoriasModel, on_delete=models.CASCADE, related_name="productos")
-  imagen_url = models.ImageField(upload_to="imagenes/", blank=True , null=True) # Aca se guardara la imagen , ejm (imagen.png)
+  imagen_url = CloudinaryField('image', blank=True, null=True) # Aca se guardara la imagen , ejm (imagen.png)
   imagen_url_full = models.URLField(blank=True , null=True) # Aca se guardara la url ejm (www.cloudinary/nube/carpeta/imagen.png)
   slug = models.CharField(max_length=50)
   destacado = models.BooleanField(default=True)
@@ -26,7 +27,7 @@ class ProductosModel(models.Model):
   created_at = models.DateTimeField(auto_now_add=True) 
   updated_at = models.DateTimeField(auto_now=True)
   estado = models.BooleanField(default=True)
-  
+
   class Meta: 
     db_table = "productos"
 

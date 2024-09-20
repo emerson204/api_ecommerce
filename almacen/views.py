@@ -1,7 +1,6 @@
 from .models import *
 from .serializer import *
 from rest_framework import generics , status
-from rest_framework.views import APIView 
 from rest_framework.response import Response
 from django.http import Http404
 
@@ -49,6 +48,7 @@ class CategoriasUpdateView(generics.UpdateAPIView):
 
 class CategoriasDeleteView(generics.DestroyAPIView):
   queryset = CategoriasModel.objects.all()
+  serializer_class =  CategoriasSerializer
   
   def destroy(self, request, *args, **kwargs):
     try:
@@ -83,22 +83,31 @@ class ProductosListView(generics.ListAPIView):
       "data": response.data
     },status=status.HTTP_200_OK)
     
-class ProductosCreateView(APIView):
-   def post(self, request):
-      serializer = ProductosSerializer(data=request.data)
-      if serializer.is_valid():
-         imagen_url = serializer.validated_data['imagen_url']    # patito.png
-         imagen_url.name = 'images/' + imagen_url.name   #images/patito.png
-         imagen = serializer.save()
+class ProductosCreateView(generics.CreateAPIView):
+    serializer_class = ProductosSerializer
 
-         #Obtener la URL completa de cloudinary
-         imagen_url_full = imagen.imagen_url.url  #.url  www.cloudinary/minube/carpeta/patito.png
-         imagen.imagen_url_full = imagen_url_full
-         imagen.save()
-         
-         # Actualizamos nuestra respuesta de la URL 
-         respuesta = ProductosSerializer(imagen)
-         return Response(respuesta.data, status=status.HTTP_201_CREATED)
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            # Guardar el producto sin la URL completa aún
+            producto = serializer.save()
+            
+            # Obtener la URL completa de Cloudinary
+            img_url_full = producto.imagen_url.url  # Suponiendo que img_url es el campo en tu modelo
+            
+            # Actualizar el campo img_url_full en el producto
+            producto.imagen_url_full = img_url_full
+            producto.save()
+            
+            # Serializar el producto actualizado
+            response_serializer = ProductosSerializer(producto)
+            
+            return Response({
+                "message": "Producto creado correctamente",
+                "data": response_serializer.data
+            }, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 class ProductosUpdateView(generics.UpdateAPIView):
   queryset = ProductosModel.objects.all()
@@ -120,14 +129,17 @@ class ProductosUpdateView(generics.UpdateAPIView):
       
 class ProductosDeleteView(generics.DestroyAPIView):
   queryset = ProductosModel.objects.all()
+  serializer_class =  ProductosSerializer
   
   def destroy(self, request, *args, **kwargs):
     try:
+      print(kwargs.get("pk"))
       instance = self.get_object()
       instance.estado = False
       instance.save()
       
-      serializer = self.get_serializer()
+      
+      serializer = self.get_serializer(instance)
 
       return Response({
         "message": "Producto Eliminado Correctamente",
@@ -184,6 +196,7 @@ class DireccionesUpdateView(generics.UpdateAPIView):
   
 class DireccionesDeleteView(generics.DestroyAPIView):
   queryset = DireccionesModel.objects.all()
+  serializer_class = DireccionesSerializer
   
   def destroy(self, request, *args, **kwargs):
     try:

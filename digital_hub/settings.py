@@ -1,4 +1,5 @@
 from pathlib import Path
+from datetime import timedelta
 from dotenv import load_dotenv
 import os
 
@@ -23,13 +24,15 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'cloudinary_storage',
     'django.contrib.staticfiles',
+    'cloudinary_storage',
     'cloudinary',
-    'drf_yasg',
     'rest_framework',
+    'drf_yasg',
+    'rest_framework_simplejwt',
     'almacen',
-    'transacciones'
+    'transacciones',
+    'usuarios'
 ]
 
 MIDDLEWARE = [
@@ -122,7 +125,18 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': 'dgqi1bsbv',
-    'API_KEY': '393164233986286',
-    'API_SECRET': 'VPon_u2KU3WeJ3nMORdtNGNlW1I'
+    'CLOUD_NAME': os.getenv('CLOUDINARY_CLOUD_NAME'),
+    'API_KEY': os.getenv('CLOUDINARY_API_KEY'),
+    'API_SECRET': os.getenv('CLOUDINARY_API_SECRET'),
+}
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+}
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=5),
+    "REFRESH_TOKEN_LIFETIME": timedelta(weeks=2),
 }

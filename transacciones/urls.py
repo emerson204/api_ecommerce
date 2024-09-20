@@ -2,8 +2,8 @@ from django.urls import path
 from .views import *
 
 urlpatterns = [
-  path("list/ordenes/", OrdenesListView.as_view()),
-  path("create/ordenes/", OrdenesCreateView.as_view()),
-  path("update/ordenes/<int:pk>", OrdenesUpdateView.as_view()),
-  path("delete/ordenes/<int:pk>", OrdenesDeleteView.as_view()),
+  path("ordenes/list/", OrdenesListView.as_view()),
+  path("ordenes/create/", OrdenesCreateView.as_view()),
+  path("ordenes/update/<int:pk>", OrdenesUpdateView.as_view()),
+  path("ordenes/delete/<int:pk>", OrdenesDeleteView.as_view()),
 ]
