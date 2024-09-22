@@ -3,11 +3,13 @@ from .serializer import *
 from rest_framework import generics , status
 from rest_framework.response import Response
 from django.http import Http404
+from rest_framework.permissions import IsAuthenticated
 
 # VISTA DE CATEGORIAS 
 class CategoriasListView(generics.ListAPIView):
   queryset = CategoriasModel.objects.all()
   serializer_class = CategoriasSerializer
+  permission_classes = [IsAuthenticated]
   
   def list(self, request, *args, **kwargs):
     response = super().list(request, *args, **kwargs)  
@@ -74,6 +76,7 @@ class CategoriasDeleteView(generics.DestroyAPIView):
 class ProductosListView(generics.ListAPIView):
   queryset = ProductosModel.objects.all()
   serializer_class = ProductosSerializer
+  permission_classes = [IsAuthenticated]
   
   def list(self, request, *args, **kwargs):
     response = super().list(request, *args, **kwargs)
